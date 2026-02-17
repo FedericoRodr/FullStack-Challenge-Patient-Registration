@@ -16,8 +16,14 @@ export async function createPatient(formData: FormData) {
   const response = await fetch(`${API_URL}/patients`, {
     method: "POST",
     body: formData,
+    headers: {
+      Accept: "application/json",
+    },
   });
 
-  if (!response.ok) throw new Error("Error creating patient");
+  if (!response.ok) {
+    const error = await response.json();
+    throw error;
+  }
   return response.json();
 }

@@ -21,7 +21,7 @@ services:
     build: ./backend/docker
     container_name: laravel_backend
     ports:
-      - "8000:8000"
+      - "8000:80"
     volumes:
       - ./backend:/var/www
     depends_on:

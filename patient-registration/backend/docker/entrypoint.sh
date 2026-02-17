@@ -1,5 +1,4 @@
 #!/bin/sh
-
 set -e
 
 echo "Waiting for database..."
@@ -8,5 +7,12 @@ sleep 5
 echo "Running migrations..."
 php artisan migrate --force
 
-echo "Starting Laravel server..."
-exec php artisan serve --host=0.0.0.0 --port=8000
+echo "Ensuring storage link..."
+php artisan storage:link || true
+
+echo "Fixing permissions..."
+chown -R www-data:www-data storage bootstrap/cache
+chmod -R 775 storage bootstrap/cache
+
+echo "Starting Apache..."
+exec apache2-foreground

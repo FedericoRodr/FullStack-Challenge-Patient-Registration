@@ -18,16 +18,21 @@ export function PatientCard({ patient }: { patient: Patient }) {
           alt={patient.full_name}
         />
 
-        <div className="patient-main-info">
-          <strong>{patient.full_name}</strong>
-        </div>
+        <div className="patient-main-info">{patient.full_name}</div>
 
         <div className="expand-indicator">{expanded ? "−" : "+"}</div>
       </div>
 
       <div className="patient-card-body">
-        <p>📧 {patient.email}</p>
-        <p>📞 {patient.phone}</p>
+        <div className="patient-detail">
+          <span>Email address</span>
+          <strong>{patient.email}</strong>
+        </div>
+
+        <div className="patient-detail">
+          <span>Phone number</span>
+          <strong>{patient.phone}</strong>
+        </div>
       </div>
     </div>
   );

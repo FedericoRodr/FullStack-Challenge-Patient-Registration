@@ -29,6 +29,9 @@ npm create vite@latest
 
 # Docker
 
+## Build and start the containers in detached mode
+docker compose up -d --build
+
 ## Set up development environment
 docker-compose up -d
 

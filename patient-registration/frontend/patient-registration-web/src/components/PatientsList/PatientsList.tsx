@@ -21,13 +21,17 @@ export function PatientsList() {
     fetchPatients();
   }, []);
 
- return (
+  return (
     <div className="patients-page">
       <div className="patients-box">
         <h1 className="patients-title">Patients</h1>
 
-        <div className="patients-list">
-          {loading && <p className="state">Loading patients...</p>}
+        <div className={`patients-list ${loading ? "loading" : ""}`}>
+          {loading && (
+            <div className="spinner-container">
+              <div className="spinner" />
+            </div>
+          )}
 
           {!loading && patients.length === 0 && (
             <p className="state">No patients yet</p>
@@ -39,18 +43,22 @@ export function PatientsList() {
         </div>
 
         <div className="patients-footer">
-          <button onClick={() => setShowModal(true)}>+ Add Patient</button>
+          <button className="add-patient-button" onClick={() => setShowModal(true)}>Add Patient</button>
         </div>
       </div>
 
       {showModal && (
         <div className="modal-backdrop" onClick={() => setShowModal(false)}>
-          <div className="modal" onClick={(e) => e.stopPropagation()}>
+          <div className="modal-box" onClick={(e) => e.stopPropagation()}>
             <PatientForm
-              onSuccess={() => {
+              onSuccess={async () => {
                 setShowModal(false);
-                getPatients().then(setPatients);
+                setLoading(true);
+                const data = await getPatients();
+                setPatients(data);
+                setLoading(false);
               }}
+              onClose={() => setShowModal(false)}
             />
           </div>
         </div>
