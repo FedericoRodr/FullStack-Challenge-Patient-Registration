@@ -12,6 +12,12 @@ php artisan make:model AModel -m
 ## Create controller
 php artisan make:controller AController
 
+## Create mailable class
+php artisan make:mail AClass
+
+## Create queue table
+php artisan queue:table
+
 # Docker
 
 ## Set up development environment
