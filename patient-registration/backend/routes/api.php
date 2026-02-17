@@ -7,4 +7,5 @@ Route::get('/health', function () {
     return response()->json(['status' => 'ok']);
 });
 
+Route::get('/patients', [PatientController::class, 'index']);
 Route::post('/patients', [PatientController::class, 'store']);

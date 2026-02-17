@@ -9,6 +9,12 @@ use Illuminate\Support\Facades\Mail;
 
 class PatientController extends Controller
 {
+    public function index()
+    {
+        $patients = Patient::all();
+        return response()->json($patients);
+    }
+
     public function store(Request $request)
     {
         $validatedData = $request->validate([

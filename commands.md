@@ -18,6 +18,11 @@ php artisan make:mail AClass
 ## Create queue table
 php artisan queue:table
 
+# Frontend
+
+## Create vite project
+npm create vite@latest
+
 # Docker
 
 ## Set up development environment
@@ -31,3 +36,6 @@ docker compose exec backend php artisan migrate
 
 ## View the services
 docker compose ps
+
+## Logs of a service
+docker logs AProject

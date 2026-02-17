@@ -11,15 +11,35 @@ services:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U admin -d clinic_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
   backend:
-    build: ./backend
+    build: ./backend/docker
+    container_name: laravel_backend
     ports:
       - "8000:8000"
     volumes:
       - ./backend:/var/www
     depends_on:
-      - postgres
+      postgres:
+        condition: service_healthy
+
+  frontend:
+    build: ./frontend/patient-registration-web
+    container_name: react_frontend
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./frontend/patient-registration-web:/app
+      - /app/node_modules
+    environment:
+      - CHOKIDAR_USEPOLLING=true
+    depends_on:
+      - backend
 
   pgadmin:
     image: dpage/pgadmin4:latest
@@ -33,7 +53,8 @@ services:
     volumes:
       - pgadmin_data:/var/lib/pgadmin
     depends_on:
-      - postgres
+      postgres:
+        condition: service_healthy
 
 volumes:
   postgres_data:
