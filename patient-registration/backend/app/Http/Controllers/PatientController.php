@@ -21,8 +21,11 @@ class PatientController extends Controller
             'full_name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'email', 'unique:patients,email'],
             'phone' => ['required', 'string', 'max:20'],
-            'document_photo_path' => ['required', 'string'],
+            'document_photo' => ['required', 'image', 'mimes:jpeg,jpg', 'max:2048'],
         ]);
+
+        $path = $request->file('document_photo')->store('documents', 'public');
+        $validatedData['document_photo_path'] = $path;
 
         $patient = Patient::create($validatedData);
 

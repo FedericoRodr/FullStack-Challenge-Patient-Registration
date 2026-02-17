@@ -18,6 +18,10 @@ php artisan make:mail AClass
 ## Create queue table
 php artisan queue:table
 
+## Create symbolic link from "public/storage" to "storage/app/public"
+php artisan storage:link
+
+
 # Frontend
 
 ## Create vite project

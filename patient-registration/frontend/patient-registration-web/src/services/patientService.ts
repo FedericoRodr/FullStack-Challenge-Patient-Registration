@@ -1,7 +1,7 @@
 import type { Patient } from "../models/Patient";
+import { ENV } from "../config/env";
 
-const API_URL = "http://localhost:8000/api";
-
+const API_URL = `${ENV.BACKEND_API_URL}/api`;
 export async function getPatients(): Promise<Patient[]> {
   const response = await fetch(`${API_URL}/patients`);
 
@@ -15,10 +15,6 @@ export async function getPatients(): Promise<Patient[]> {
 export async function createPatient(formData: FormData) {
   const response = await fetch(`${API_URL}/patients`, {
     method: "POST",
-    headers: {
-      Accept: "application/json",
-      "Content-Type": "application/json",
-    },
     body: formData,
   });
 

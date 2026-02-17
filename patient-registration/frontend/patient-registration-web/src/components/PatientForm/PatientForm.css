@@ -1,0 +1,65 @@
+.patient-form {
+  background: white;
+  padding: 32px;
+  border-radius: 16px;
+  max-width: 520px;
+  display: flex;
+  flex-direction: column;
+}
+
+.patient-form-title {
+  margin: 0 0 24px 0;
+  font-size: 24px;
+  font-weight: 600;
+}
+
+.patient-form-field {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 18px;
+}
+
+.patient-form-field label {
+  font-size: 14px;
+  font-weight: 500;
+  margin-bottom: 6px;
+  color: #374151;
+}
+
+.patient-form input {
+  padding: 12px 14px;
+  font-size: 15px;
+  border-radius: 8px;
+  border: 1px solid #d1d5db;
+}
+
+.patient-form input:focus {
+  outline: none;
+  border-color: #01a3de;
+}
+
+.patient-form-phone {
+  display: flex;
+  gap: 12px;
+}
+
+.phone-code {
+  width: 90px;
+  text-align: center;
+}
+
+.patient-form-error {
+  background: #fee2e2;
+  color: #b91c1c;
+  padding: 10px 14px;
+  border-radius: 8px;
+  font-size: 14px;
+  margin-bottom: 16px;
+}
+
+.patient-form-submit {
+  margin-top: 12px;
+  padding: 14px;
+  font-size: 16px;
+  border-radius: 10px;
+}
