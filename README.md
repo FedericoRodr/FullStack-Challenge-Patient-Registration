@@ -17,13 +17,15 @@ When running with Docker Compose:
 - pgAdmin: http://localhost:5050 (login: admin@admin.com / admin)
 - Postgres: localhost:5432 (db: clinic_db, user: admin, password: admin)
 
-## Quick start (Docker)
+## Quick start
+
+Copy the .env.example files to .env in both backend and frontend directories and adjust any necessary environment variables (Mailtrap credentials).
 
 From the repository root:
 
 ```bash
 cd patient-registration/backend
-compose install
+composer install
 cd ..
 cd frontend
 npm install
@@ -42,5 +44,5 @@ Notes:
 
 - The backend container runs migrations on startup.
 - The backend container also ensures the public storage symlink exists (so uploaded images are served from `/storage/...`).
-- This project uses Mailtrap for email testing in development. Emails are not sent to real inboxes. You can see the configuration in `backend/.env` (MAIL_HOST, MAIL_PORT, etc). To process the email queue, run `docker compose exec backend php artisan queue:work`. If you want to try the email you must create an account in Mailtrap and set the MAIL_USERNAME and MAIL_PASSWORD in the .env file with your Mailtrap credentials.
+- This project uses Mailtrap for email testing in development. Emails are not sent to real inboxes. You can see the configuration in `backend/.env.example` (MAIL_HOST, MAIL_PORT, etc). If you want to try the email you must create an account in Mailtrap and set the MAIL_USERNAME and MAIL_PASSWORD in the .env file with your Mailtrap credentials. To process the email queue, run `docker compose exec backend php artisan queue:work` and then create a patient. 
 - When starting the application, the backend may take a few seconds to become ready while it initializes and connects to required services. The frontend should wait until the backend is ready before making requests. You can check the backend with the health endpoint: http://localhost:8000/api/health. When it returns a successful response, the backend is ready to receive requests from the frontend.
