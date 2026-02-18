@@ -10,19 +10,22 @@ export function PatientsList() {
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
 
-  useEffect(() => {
-    async function fetchPatients() {
-      setLoading(true);
+  async function refreshPatients() {
+    setLoading(true);
+    try {
       const data = await getPatients();
       setPatients(data);
+    } finally {
       setLoading(false);
     }
+  }
 
-    fetchPatients();
+  useEffect(() => {
+    refreshPatients();
   }, []);
 
   return (
-    <div className="patients-page">
+    <>
       <div className="patients-box">
         <h1 className="patients-title">Patients</h1>
 
@@ -70,17 +73,14 @@ export function PatientsList() {
             <PatientForm
               onSuccess={async () => {
                 setShowModal(false);
-                setLoading(true);
-                const data = await getPatients();
-                setPatients(data);
-                setLoading(false);
+                await refreshPatients();
               }}
               onClose={() => setShowModal(false)}
             />
           </div>
         </div>
       )}
-    </div>
+    </>
   );
 }
 

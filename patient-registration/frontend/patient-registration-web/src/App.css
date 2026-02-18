@@ -5,33 +5,23 @@ body {
     -apple-system,
     BlinkMacSystemFont,
     sans-serif;
-  background-color: #dedede;
+  background-color: #f1f5f9;
   color: #333;
-}
-
-.app {
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
 }
 
 .app-header {
   background: linear-gradient(135deg, #01a3de, #0284c7);
   color: white;
-  padding: 2px 8px;
+  padding: 16px 24px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
 }
 
 .app-title {
   margin: 0;
-  font-size: 25px;
+  font-size: 24px;
   font-weight: 600;
-  padding: 10px;
 }
 
 .app-main {
-  display: grid;
-  place-items: center;
-  padding: 20px;
+  padding: 24px;
 }
-

@@ -1,10 +1,10 @@
 .status-modal {
   position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.45);
   display: flex;
   align-items: center;
   justify-content: center;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
   z-index: 3000;
   animation: fadeIn 0.25s ease;
 }
@@ -18,6 +18,10 @@
   animation: scaleIn 0.25s ease;
 }
 
+.status-modal-content.loading {
+  border-top: 6px solid #01a3de;
+}
+
 .status-modal-content.success {
   border-top: 6px solid #22c55e;
 }
@@ -26,8 +30,20 @@
   border-top: 6px solid #ef4444;
 }
 
-.status-modal-content.loading {
-  border-top: 6px solid #01a3de;
+.status-modal-content.success .modal-close {
+  background: #22c55e;
+}
+
+.status-modal-content.success .modal-close:hover {
+  background-color: #16a34a;
+}
+
+.status-modal-content.error .modal-close {
+  background: #ef4444;
+}
+
+.status-modal-content.error .modal-close:hover {
+  background-color: #dc2626;
 }
 
 .modal-close {
@@ -38,31 +54,6 @@
   background: #01a3de;
   color: white;
   cursor: pointer;
-}
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
-
-@keyframes scaleIn {
-  from {
-    transform: scale(0.95);
-  }
-  to {
-    transform: scale(1);
-  }
-}
-
-.spinner-container {
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
 }
 
 .status-modal-content.loading {
@@ -91,6 +82,15 @@
 @keyframes spin {
   to {
     transform: rotate(360deg);
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    transform: scale(0.95);
+  }
+  to {
+    transform: scale(1);
   }
 }
 

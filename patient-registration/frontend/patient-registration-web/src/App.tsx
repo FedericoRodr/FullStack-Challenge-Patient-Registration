@@ -5,9 +5,7 @@ function App() {
   return (
     <div className="app">
       <header className="app-header">
-        <p className="app-title">
-          Patient management dashboard
-        </p>
+        <h1 className="app-title">Patient management dashboard</h1>
       </header>
 
       <main className="app-main">

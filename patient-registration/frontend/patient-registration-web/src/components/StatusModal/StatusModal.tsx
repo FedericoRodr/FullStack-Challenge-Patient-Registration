@@ -1,4 +1,3 @@
-import { useEffect } from "react";
 import "./StatusModal.css";
 
 type Status = "loading" | "success" | "error";
@@ -11,23 +10,9 @@ type Props = {
 };
 
 export function StatusModal({ status, message, onClose, onConfirm }: Props) {
-  useEffect(() => {
-    function onKeyDown(e: KeyboardEvent) {
-      if (e.key === "Escape") {
-        onClose();
-      }
-    }
-
-    window.addEventListener("keydown", onKeyDown);
-    return () => window.removeEventListener("keydown", onKeyDown);
-  }, [onClose]);
-
   return (
-    <div className="status-modal" onClick={onClose}>
-      <div
-        className={`status-modal-content ${status}`}
-        onClick={(e) => e.stopPropagation()}
-      >
+    <div className="status-modal" role="dialog" aria-modal="true">
+      <div className={`status-modal-content ${status}`}>
         {status === "loading" && (
           <>
             <div className="status-spinner" />

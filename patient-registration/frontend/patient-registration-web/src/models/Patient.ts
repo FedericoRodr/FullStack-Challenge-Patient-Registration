@@ -4,6 +4,6 @@ export interface Patient {
   email: string;
   phone: string;
   document_photo_path: string;
-  created_at?: string;
-  updated_at?: string;
+  created_at: string;
+  updated_at: string;
 }

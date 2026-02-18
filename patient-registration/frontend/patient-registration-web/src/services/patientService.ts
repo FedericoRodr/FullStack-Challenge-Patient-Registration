@@ -2,28 +2,36 @@ import type { Patient } from "../models/Patient";
 import { ENV } from "../config/env";
 
 const API_URL = `${ENV.BACKEND_API_URL}/api`;
-export async function getPatients(): Promise<Patient[]> {
-  const response = await fetch(`${API_URL}/patients`);
+
+async function apiFetch<T>(input: RequestInfo, init?: RequestInit): Promise<T> {
+  const response = await fetch(input, {
+    headers: {
+      Accept: "application/json",
+      ...(init?.headers || {}),
+    },
+    ...init,
+  });
 
   if (!response.ok) {
-    throw new Error("Failed to fetch patients");
+    let error;
+    try {
+      error = await response.json();
+    } catch {
+      throw new Error("Unexpected server error");
+    }
+    throw error;
   }
 
   return response.json();
 }
 
-export async function createPatient(formData: FormData) {
-  const response = await fetch(`${API_URL}/patients`, {
+export function getPatients(): Promise<Patient[]> {
+  return apiFetch<Patient[]>(`${API_URL}/patients`);
+}
+
+export function createPatient(formData: FormData) {
+  return apiFetch(`${API_URL}/patients`, {
     method: "POST",
     body: formData,
-    headers: {
-      Accept: "application/json",
-    },
   });
-
-  if (!response.ok) {
-    const error = await response.json();
-    throw error;
-  }
-  return response.json();
 }

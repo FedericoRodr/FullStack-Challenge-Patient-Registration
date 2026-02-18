@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { createPatient } from "../../services/patientService";
 import StatusModal from "../StatusModal/StatusModal";
 import "./PatientForm.css";
@@ -11,7 +11,6 @@ type FieldErrors = {
 };
 
 type ApiValidationError = {
-  message?: string;
   errors?: {
     full_name?: string[];
     email?: string[];
@@ -19,6 +18,8 @@ type ApiValidationError = {
     document_photo?: string[];
   };
 };
+
+type Status = "idle" | "loading" | "success" | "error";
 
 export function PatientForm({
   onSuccess,
@@ -32,16 +33,51 @@ export function PatientForm({
   const [countryCode, setCountryCode] = useState("");
   const [phone, setPhone] = useState("");
   const [file, setFile] = useState<File | null>(null);
+
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
   const [formError, setFormError] = useState("");
   const [submitted, setSubmitted] = useState(false);
-  const [status, setStatus] = useState<
-    "idle" | "loading" | "success" | "error"
-  >("idle");
+  const [status, setStatus] = useState<Status>("idle");
+  const [isDragging, setIsDragging] = useState(false);
 
-  function validate() {
+  function clearFieldError(field: keyof FieldErrors) {
+    setFieldErrors((prev) => {
+      if (!prev[field]) return prev;
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const { [field]: _, ...rest } = prev;
+      return rest;
+    });
+  }
+  function handleDragOver(e: React.DragEvent<HTMLLabelElement>) {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(true);
+  }
+
+  function handleDragLeave(e: React.DragEvent<HTMLLabelElement>) {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(false);
+  }
+
+  function handleDrop(e: React.DragEvent<HTMLLabelElement>) {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(false);
+
+    const droppedFile = e.dataTransfer.files?.[0];
+    if (!droppedFile) return;
+
+    setFile(droppedFile);
+    clearFieldError("document_photo");
+
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
+  }
+  function validate(): FieldErrors {
     const errors: FieldErrors = {};
 
     if (!fullName.trim()) {
@@ -52,37 +88,32 @@ export function PatientForm({
 
     if (!email.trim()) {
       errors.email = "Email is required";
-    } else if (!email.endsWith("@gmail.com")) {
+    } else if (!/^[a-zA-Z0-9._%+-]+@gmail\.com$/.test(email)) {
       errors.email = "Email must be a @gmail.com address";
-    }
-
-    if (!phone.trim()) {
-      errors.phone = "Phone number is required";
-    } else if (!/^\d+$/.test(phone)) {
-      errors.phone = "Phone number must contain only digits";
     }
 
     if (!countryCode.trim()) {
       errors.phone = "Country code is required";
     } else if (!/^\+\d+$/.test(countryCode)) {
       errors.phone = "Country code must start with + followed by digits";
+    } else if (!phone.trim()) {
+      errors.phone = "Phone number is required";
+    } else if (!/^\d+$/.test(phone)) {
+      errors.phone = "Phone number must contain only digits";
     }
 
     if (!file) {
       errors.document_photo = "Document photo is required";
-    } else if (file.type !== "image/jpeg") {
+    } else if (!["image/jpeg", "image/jpg"].includes(file.type)) {
       errors.document_photo = "Only JPG images are allowed";
     }
 
     return errors;
   }
 
-  function closeStatusModal() {
-    setStatus("idle");
-    setFormError("");
-  }
-
-  async function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(
+    e: React.SyntheticEvent<HTMLFormElement, SubmitEvent>,
+  ) {
     e.preventDefault();
     setSubmitted(true);
     setFieldErrors({});
@@ -91,7 +122,6 @@ export function PatientForm({
     const validationErrors = validate();
     if (Object.keys(validationErrors).length > 0) {
       setFieldErrors(validationErrors);
-      setStatus("error");
       return;
     }
 
@@ -105,7 +135,7 @@ export function PatientForm({
       setStatus("loading");
       await createPatient(formData);
       setStatus("success");
-    } catch (err: unknown) {
+    } catch (err) {
       setStatus("error");
 
       if (typeof err === "object" && err !== null && "errors" in err) {
@@ -123,20 +153,6 @@ export function PatientForm({
     }
   }
 
-  useEffect(() => {
-    function onKeyDown(e: KeyboardEvent) {
-      if (e.key === "Escape") {
-        closeStatusModal();
-      }
-    }
-
-    if (status !== "idle") {
-      window.addEventListener("keydown", onKeyDown);
-    }
-
-    return () => window.removeEventListener("keydown", onKeyDown);
-  }, [status]);
-
   return (
     <>
       <form className="patient-form" onSubmit={handleSubmit}>
@@ -148,13 +164,17 @@ export function PatientForm({
         >
           ×
         </button>
+
         <h2 className="patient-form-title">Add Patient</h2>
 
         <div className="patient-form-field">
           <label>Full name</label>
           <input
             value={fullName}
-            onChange={(e) => setFullName(e.target.value)}
+            onChange={(e) => {
+              setFullName(e.target.value);
+              clearFieldError("full_name");
+            }}
             placeholder="John Doe"
           />
           {submitted && fieldErrors.full_name && (
@@ -166,8 +186,11 @@ export function PatientForm({
           <label>Email address</label>
           <input
             value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            placeholder="example@gmail.com"
+            onChange={(e) => {
+              setEmail(e.target.value);
+              clearFieldError("email");
+            }}
+            placeholder="example@email.com"
           />
           {submitted && fieldErrors.email && (
             <div className="field-error">{fieldErrors.email}</div>
@@ -179,14 +202,20 @@ export function PatientForm({
           <div className="patient-form-phone">
             <input
               value={countryCode}
-              onChange={(e) => setCountryCode(e.target.value)}
+              onChange={(e) => {
+                setCountryCode(e.target.value);
+                clearFieldError("phone");
+              }}
               className="phone-code"
               placeholder="+598"
             />
             <input
               value={phone}
-              onChange={(e) => setPhone(e.target.value)}
-              placeholder="95290543"
+              onChange={(e) => {
+                setPhone(e.target.value);
+                clearFieldError("phone");
+              }}
+              placeholder="00000000"
             />
           </div>
           {submitted && fieldErrors.phone && (
@@ -195,28 +224,37 @@ export function PatientForm({
         </div>
 
         <div className="patient-form-field">
-          <label>Document photo (.jpg)</label>
+          <label>Document photo</label>
 
-          <label className="file-upload">
+          <label
+            className={`file-upload ${isDragging ? "dragging" : ""}`}
+            onDragOver={handleDragOver}
+            onDragLeave={handleDragLeave}
+            onDrop={handleDrop}
+          >
             <input
               ref={fileInputRef}
               type="file"
-              accept=".jpg"
+              accept=".jpg,.jpeg"
               hidden
-              onChange={(e) => setFile(e.target.files?.[0] ?? null)}
+              onChange={(e) => {
+                setFile(e.target.files?.[0] ?? null);
+                clearFieldError("document_photo");
+              }}
             />
 
             {file ? (
               <div className="file-preview">
                 <span className="file-name">{file.name}</span>
-
                 <div className="file-actions">
                   <button
                     type="button"
                     className="file-remove"
                     onClick={(e) => {
+                      e.stopPropagation();
                       e.preventDefault();
                       setFile(null);
+                      clearFieldError("document_photo");
                       if (fileInputRef.current) {
                         fileInputRef.current.value = "";
                       }
@@ -230,7 +268,7 @@ export function PatientForm({
             ) : (
               <div className="file-placeholder">
                 <span className="file-icon">📄</span>
-                <span>Click to upload file or drag and drop</span>
+                <span>Click to upload or drag and drop</span>
               </div>
             )}
           </label>
@@ -258,7 +296,9 @@ export function PatientForm({
               : formError || "Please fix the errors in the form."
           }
           onClose={() => setStatus("idle")}
-          onConfirm={onSuccess}
+          onConfirm={() => {
+            onSuccess();
+          }}
         />
       )}
     </>

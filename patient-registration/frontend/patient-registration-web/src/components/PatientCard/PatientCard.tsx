@@ -1,13 +1,23 @@
 import { useState } from "react";
 import type { Patient } from "../../models/Patient";
-import "./PatientCard.css";
 import { ENV } from "../../config/env";
+import "./PatientCard.css";
 
 export function PatientCard({ patient }: { patient: Patient }) {
   const [expanded, setExpanded] = useState(false);
 
+  function formatDate(value: string) {
+  return new Date(value).toLocaleString("en-US", {
+    year: "numeric",
+    month: "short",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+}
+
   return (
-    <div
+    <article
       className={`patient-card ${expanded ? "expanded" : ""}`}
       onClick={() => setExpanded((prev) => !prev)}
     >
@@ -33,8 +43,18 @@ export function PatientCard({ patient }: { patient: Patient }) {
           <span>Phone number</span>
           <strong>{patient.phone}</strong>
         </div>
+
+        <div className="patient-detail">
+          <span>Created at</span>
+          <strong>{formatDate(patient.created_at)}</strong>
+        </div>
+
+        <div className="patient-detail">
+          <span>Updated at</span>
+          <strong>{formatDate(patient.updated_at)}</strong>
+        </div>
       </div>
-    </div>
+    </article>
   );
 }
 
