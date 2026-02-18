@@ -2,10 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Mail\PatientRegisteredMail;
+use App\Http\Requests\StorePatientRequest;
 use App\Models\Patient;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Mail;
+use App\Services\PatientNotificationService;
 
 class PatientController extends Controller
 {
@@ -15,23 +14,16 @@ class PatientController extends Controller
         return response()->json($patients);
     }
 
-    public function store(Request $request)
+    public function store(StorePatientRequest $request)
     {
-        $validatedData = $request->validate([
-            'full_name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'email', 'unique:patients,email'],
-            'phone' => ['required', 'string', 'max:20'],
-            'document_photo' => ['required', 'image', 'mimes:jpeg,jpg', 'max:2048'],
+        $path = $request->file('document_photo')->store('documents', 'public');
+
+        $patient = Patient::create([
+            ...$request->validated(),
+            'document_photo_path' => $path,
         ]);
 
-        $path = $request->file('document_photo')->store('documents', 'public');
-        $validatedData['document_photo_path'] = $path;
-
-        $patient = Patient::create($validatedData);
-
-        Mail::to($patient->email)->queue(
-            new PatientRegisteredMail($patient)
-        );
+        PatientNotificationService::sendRegistrationConfirmation($patient);
 
         return response()->json(['message' => 'Patient registered successfully', 'patient' => $patient], 201);
     }

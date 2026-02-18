@@ -46,3 +46,6 @@ docker compose ps
 
 ## Logs of a service
 docker logs AProject
+
+## Run the Laravel queue worker
+docker compose exec backend php artisan queue:work

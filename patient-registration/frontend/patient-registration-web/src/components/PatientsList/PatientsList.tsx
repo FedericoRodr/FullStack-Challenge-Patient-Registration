@@ -34,7 +34,17 @@ export function PatientsList() {
           )}
 
           {!loading && patients.length === 0 && (
-            <p className="state">No patients yet</p>
+            <div className="empty-state">
+              <div className="empty-icon">🩺</div>
+              <h2>No patients yet</h2>
+              <p>Get started by adding the first patient.</p>
+              <button
+                className="add-patient-button"
+                onClick={() => setShowModal(true)}
+              >
+                Add Patient
+              </button>
+            </div>
           )}
 
           {patients.map((patient) => (
@@ -42,9 +52,16 @@ export function PatientsList() {
           ))}
         </div>
 
-        <div className="patients-footer">
-          <button className="add-patient-button" onClick={() => setShowModal(true)}>Add Patient</button>
-        </div>
+        {patients.length > 0 && (
+          <div className="patients-footer">
+            <button
+              className="add-patient-button"
+              onClick={() => setShowModal(true)}
+            >
+              Add Patient
+            </button>
+          </div>
+        )}
       </div>
 
       {showModal && (
