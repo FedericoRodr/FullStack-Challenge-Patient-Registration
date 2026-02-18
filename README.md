@@ -22,7 +22,12 @@ When running with Docker Compose:
 From the repository root:
 
 ```bash
-cd patient-registration
+cd patient-registration/backend
+compose install
+cd ..
+cd frontend
+npm install
+cd ..
 docker compose up -d --build
 docker compose exec backend php artisan queue:work
 ```
